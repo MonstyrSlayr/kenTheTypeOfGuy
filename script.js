@@ -191,7 +191,7 @@ function displayVideoAndComment()
     const authorAvatarEl = document.getElementById("commentAuthorAvatar");
 
     commentTextEl.textContent = `${comment}`;
-    timestampInfoEl.textContent = `⏱ Jumped to ${timestamp}`;
+    timestampInfoEl.textContent = `⏱ jumped to ${timestamp}`;
     authorNameEl.textContent = authorName;
     authorAvatarEl.src = authorAvatar || "";
     authorAvatarEl.style.display = authorAvatar ? "inline-block" : "none";
