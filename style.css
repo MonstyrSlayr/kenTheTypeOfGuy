@@ -1,0 +1,117 @@
+body
+{
+    background-color: #111111;
+    color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    flex-direction: column;
+}
+
+#appContainer
+{
+    text-align: center;
+    width: 56em;
+    max-width: 95%;
+}
+
+#player
+{
+    border-radius: 1em;
+    overflow: hidden;
+    box-shadow: 0 0 1em rgba(255, 255, 255, 0.1);
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+}
+
+#commentSection
+{
+    margin: 1em;
+    background-color: #222222;
+    padding: 1em;
+    border-radius: 1em;
+}
+
+#commentAuthor
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+#commentAuthorAvatar
+{
+    border-radius: 50%;
+    width: 3em;
+    height: 3em;
+    margin: 0.5em;
+}
+
+#commentText
+{
+    font-size: 1em;
+    margin: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+#timestampInfo
+{
+    font-size: 0.9em;
+    color: #bbbbbb;
+}
+
+#nextButton, #jumpButton, #copyButton
+{
+    color: white;
+    border: none;
+    padding: 0.75em 1.5em;
+    font-size: 1em;
+    border-radius: 0.5em;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+#nextButton
+{
+    background-color: #e63946;
+}
+
+#nextButton:hover
+{
+    background-color: #d62828;
+    scale: 103%;
+}
+
+#jumpButton
+{
+    background-color: #3945e6;
+}
+
+#jumpButton:hover
+{
+    background-color: #2828d6;
+    scale: 103%;
+}
+
+#copyButton
+{
+    background-color: #39e63f;
+}
+
+#copyButton:hover
+{
+    background-color: #28d62e;
+    scale: 103%;
+}
+
+a
+{
+    color: white;
+}
