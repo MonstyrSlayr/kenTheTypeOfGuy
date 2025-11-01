@@ -89,7 +89,9 @@ async function fetchChannelVideos(maxPages)
 
         // some instances return videos directly, others under .videos
         const videos = json.videos || json || [];
-        allDaVideos = allDaVideos.concat(videos);
+        if (page == 1) allVideos = videos;
+        else allVideos = allVideos.concat(videos);
+        console.log(`${allVideos.length} videos fetched`);
 
         if (!json.continuation)
         {
@@ -99,8 +101,6 @@ async function fetchChannelVideos(maxPages)
         continuation = json.continuation;
         page++;
     }
-
-    return allDaVideos;
 }
 
 async function fetchComments(videoId)
@@ -286,22 +286,13 @@ async function onYouTubeIframeAPIReady()
                 jumpToTimestamp();
             });
 
-            console.log(`initial videos fetched (${allVideos.length}), getting more...`);
+            console.log(`cached videos fetched (${allVideos.length}), getting all...`);
         });
     });
 
     const flavorText = document.getElementById("flavorText");
     flavorText.textContent = getRandomItem(flavor);
 
-    const start = 1;
-    const max = 10;
-
-    for (let i = start; i < max; i++)
-    {
-        await fetchChannelVideos(i).then((vids) =>
-        {
-            allVideos = vids;
-            console.log(`${allVideos.length} videos fetched`);
-        });
-    }
+    const vidFetch = 20;
+    fetchChannelVideos(vidFetch);
 }
