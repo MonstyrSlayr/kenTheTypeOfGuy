@@ -76,6 +76,7 @@ body
     border-radius: 0.5em;
     cursor: pointer;
     transition: all 0.1s;
+    margin: 0.5em;
 }
 
 #nextButton
