@@ -32,6 +32,7 @@ const flavor = [
 let player;
 let currentVideo = null;
 let isLoading = false;
+let allVideos = [];
 
 // === UTILITY FUNCTIONS ===
 function getRandomItem(array)
@@ -60,16 +61,46 @@ async function fetchFromInstances(path)
         }
         catch (err)
         {
-            console.warn(`Instance failed: ${base}`, err);
+            console.warn(`instance failed: ${base}`, err);
         }
     }
-    throw new Error("All Invidious instances failed");
+    throw new Error("All invidious instances failed");
 }
 
-async function fetchChannelVideos()
+async function fetchChannelVideos(maxPages)
 {
-    const json = await fetchFromInstances(`api/v1/channels/${channelId}/videos`);
-    return json.videos || json;
+    if (maxPages == 1)
+    {
+        const json = await fetchFromInstances(`api/v1/channels/${channelId}/videos`);
+        return json.videos || json;
+    }
+
+    let allDaVideos = [];
+    let continuation = null;
+    let page = 1;
+
+    while (page <= maxPages) // limit to avoid huge loops
+    {
+        const path = continuation
+            ? `api/v1/channels/${channelId}/videos?continuation=${continuation}`
+            : `api/v1/channels/${channelId}/videos`;
+
+        const json = await fetchFromInstances(path);
+
+        // some instances return videos directly, others under .videos
+        const videos = json.videos || json || [];
+        allDaVideos = allDaVideos.concat(videos);
+
+        if (!json.continuation)
+        {
+            break; // no more pages
+        }
+
+        continuation = json.continuation;
+        page++;
+    }
+
+    return allDaVideos;
 }
 
 async function fetchComments(videoId)
@@ -120,17 +151,16 @@ async function loadRandomVideoAndComment()
 
     try
     {
-        const videos = await fetchChannelVideos();
-        const randomVideo = getRandomItem(videos);
+        const randomVideo = getRandomItem(allVideos);
         const videoId = randomVideo.videoId || randomVideo.id;
-        if (!videoId) throw new Error("Video ID not found");
+        if (!videoId) throw new Error("video id not found");
 
         const comments = await fetchComments(videoId);
         const commentObj = pickTimestampComment(comments);
 
         if (!commentObj)
         {
-            console.warn("No timestamp comment found, retrying...");
+            console.warn("no timestamp comment found, retrying...");
             return loadRandomVideoAndComment();
         }
 
@@ -138,9 +168,9 @@ async function loadRandomVideoAndComment()
         const match = commentText.match(timestampRegex)[0];
         const seconds = parseTimestamp(match);
 
-        const videoTitle = randomVideo.title || "Untitled Video";
+        const videoTitle = randomVideo.title || "untitled Video";
         const uploadDate = randomVideo.publishedText || new Date(randomVideo.published * 1000).toLocaleDateString();
-        const authorName = commentObj.author || "Unknown User";
+        const authorName = commentObj.author || "unknown User";
         const authorAvatar = commentObj.authorThumbnails ? commentObj.authorThumbnails.slice(-1)[0].url : "";
 
         const url = `https://www.youtube.com/watch?v=${videoId}&t=${seconds}s`;
@@ -165,7 +195,7 @@ async function loadRandomVideoAndComment()
     }
     catch (err)
     {
-        console.error("Error loading video/comment:", err);
+        console.error("error loading video/comment:", err);
         setTimeout(() => loadRandomVideoAndComment(), 2000);
     }
     finally
@@ -213,7 +243,7 @@ function displayVideoAndComment()
                 onReady: event => event.target.seekTo(seconds, true),
                 onError: event =>
                 {
-                    console.warn("Player error, retrying...", event.data);
+                    console.warn("player error, retrying...", event.data);
                     loadRandomVideoAndComment();
                 }
             }
@@ -234,21 +264,33 @@ function jumpToTimestamp()
 }
 
 // === YT API ===
-function onYouTubeIframeAPIReady()
+async function onYouTubeIframeAPIReady()
 {
-    loadRandomVideoAndComment();
+    await fetchChannelVideos(1).then((vids) =>
+    {
+        allVideos = vids;
+        loadRandomVideoAndComment();
+
+        // === EVENT LISTENERS ===
+        document.getElementById("nextButton").addEventListener("click", () =>
+        {
+            loadRandomVideoAndComment();
+        });
+
+        document.getElementById("jumpButton").addEventListener("click", () =>
+        {
+            jumpToTimestamp();
+        });
+    });
 
     const flavorText = document.getElementById("flavorText");
-    flavorText.textContent = flavor[Math.floor(Math.random() * flavor.length)];
+    flavorText.textContent = getRandomItem(flavor);
+
+    console.log(`initial videos fetched (${allVideos.length}), getting more...`);
+
+    allVideos = await fetchChannelVideos(10).then((vids) =>
+    {
+        allVideos = vids;
+        console.log(`${allVideos.length} videos fetched`);
+    });
 }
-
-// === EVENT LISTENERS ===
-document.getElementById("nextButton").addEventListener("click", () =>
-{
-    loadRandomVideoAndComment();
-});
-
-document.getElementById("jumpButton").addEventListener("click", () =>
-{
-    jumpToTimestamp();
-});
