@@ -298,7 +298,7 @@ async function onYouTubeIframeAPIReady()
 
     for (let i = start; i < max; i++)
     {
-        allVideos = await fetchChannelVideos(i).then((vids) =>
+        await fetchChannelVideos(i).then((vids) =>
         {
             allVideos = vids;
             console.log(`${allVideos.length} videos fetched`);
