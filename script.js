@@ -107,7 +107,7 @@ async function fetchComments(videoId)
 {
     try
     {
-        const comments = await fetchFromInstances(`/api/v1/comments/${videoId}`);
+        const comments = await fetchFromInstances(`/api/v1/comments/${videoId}?count=100`);
         if (Array.isArray(comments)) return comments;
         if (comments.comments) return comments.comments;
     }
@@ -116,7 +116,7 @@ async function fetchComments(videoId)
         console.warn("Primary comment fetch failed, trying fallback /videos/");
         try
         {
-            const videoData = await fetchFromInstances(`/api/v1/videos/${videoId}`);
+            const videoData = await fetchFromInstances(`/api/v1/videos/${videoId}?count=100`);
             return videoData.comments || [];
         }
         catch (err2)
@@ -266,31 +266,42 @@ function jumpToTimestamp()
 // === YT API ===
 async function onYouTubeIframeAPIReady()
 {
-    await fetchChannelVideos(1).then((vids) =>
+    await fetch("./video_cache.json").then((response) =>
     {
-        allVideos = vids;
-        loadRandomVideoAndComment();
+        if (!response.ok) return;
 
-        // === EVENT LISTENERS ===
-        document.getElementById("nextButton").addEventListener("click", () =>
+        response.json().then((vids) =>
         {
+            allVideos = vids;
             loadRandomVideoAndComment();
-        });
 
-        document.getElementById("jumpButton").addEventListener("click", () =>
-        {
-            jumpToTimestamp();
+            // === EVENT LISTENERS ===
+            document.getElementById("nextButton").addEventListener("click", () =>
+            {
+                loadRandomVideoAndComment();
+            });
+
+            document.getElementById("jumpButton").addEventListener("click", () =>
+            {
+                jumpToTimestamp();
+            });
+
+            console.log(`initial videos fetched (${allVideos.length}), getting more...`);
         });
     });
 
     const flavorText = document.getElementById("flavorText");
     flavorText.textContent = getRandomItem(flavor);
 
-    console.log(`initial videos fetched (${allVideos.length}), getting more...`);
+    const start = 1;
+    const max = 10;
 
-    allVideos = await fetchChannelVideos(10).then((vids) =>
+    for (let i = start; i < max; i++)
     {
-        allVideos = vids;
-        console.log(`${allVideos.length} videos fetched`);
-    });
+        allVideos = await fetchChannelVideos(i).then((vids) =>
+        {
+            allVideos = vids;
+            console.log(`${allVideos.length} videos fetched`);
+        });
+    }
 }
