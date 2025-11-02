@@ -26,7 +26,9 @@ const flavor = [
     "to yell “evo goblin cage value!” as he watches the predator next door lure in his next victim",
     "to mention that goblin curse amplfies damage in a eulogy",
     "to throw a banana peel into the path of a person he doesn't like and watch him slip",
-    "to be scared of women"
+    "to be scared of women",
+    "to have an apple core, a fish skeleton, and a banana peel in his trash can",
+    "Ken pours cereal into a bowl. The flakes crackle as the milk hits them. On the box, a cartoon tiger proclaims ‘They’re grrrreat’. Ken chews slowly, with empty eyes. ‘They’re fine’ he whispers ‘everything’s just fine’"
 ]
 
 let player;
