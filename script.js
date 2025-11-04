@@ -28,7 +28,9 @@ const flavor = [
     "to throw a banana peel into the path of a person he doesn't like and watch him slip",
     "to be scared of women",
     "to have an apple core, a fish skeleton, and a banana peel in his trash can",
-    "Ken pours cereal into a bowl. The flakes crackle as the milk hits them. On the box, a cartoon tiger proclaims ‘They’re grrrreat’. Ken chews slowly, with empty eyes. ‘They’re fine’ he whispers ‘everything’s just fine’"
+    "Ken pours cereal into a bowl. The flakes crackle as the milk hits them. On the box, a cartoon tiger proclaims ‘They’re grrrreat’. Ken chews slowly, with empty eyes. ‘They’re fine’ he whispers ‘everything’s just fine’",
+    "Ken builds a new deck. He drags each card with care, like placing flowers on a grave. He stares at the screen. ‘This one... this one will work.’ It doesn't. But he knew that already.",
+    "Ken walks home from the cinema, alone, his mind casting back to the screening of Barbie. ‘I'm Kenough,’ he remembers the characters say, content with their place in the world. ‘Good for them,’ Ken mutters. He watches, silently, as droplets of rain pummel the pavement. ‘But I still feel like Kenothing.’"
 ]
 
 let player;
