@@ -105,6 +105,8 @@ async function fetchChannelVideos(maxPages)
         continuation = json.continuation;
         page++;
     }
+
+    return allVideos;
 }
 
 async function fetchComments(videoId)
@@ -270,28 +272,23 @@ function jumpToTimestamp()
 // === YT API ===
 async function onYouTubeIframeAPIReady()
 {
-    await fetch("./video_cache.json").then((response) =>
+    await fetchChannelVideos(1).then((vids) =>
     {
-        if (!response.ok) return;
+        allVideos = vids;
+        loadRandomVideoAndComment();
 
-        response.json().then((vids) =>
+        // === EVENT LISTENERS ===
+        document.getElementById("nextButton").addEventListener("click", () =>
         {
-            allVideos = vids;
             loadRandomVideoAndComment();
-
-            // === EVENT LISTENERS ===
-            document.getElementById("nextButton").addEventListener("click", () =>
-            {
-                loadRandomVideoAndComment();
-            });
-
-            document.getElementById("jumpButton").addEventListener("click", () =>
-            {
-                jumpToTimestamp();
-            });
-
-            console.log(`cached videos fetched (${allVideos.length}), getting all...`);
         });
+
+        document.getElementById("jumpButton").addEventListener("click", () =>
+        {
+            jumpToTimestamp();
+        });
+
+        console.log(`initial videos fetched (${allVideos.length}), getting all...`);
     });
 
     const flavorText = document.getElementById("flavorText");
