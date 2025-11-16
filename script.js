@@ -58,10 +58,12 @@ async function fetchFromInstances(path)
     {
         try
         {
-            const resp = await fetch(base + path, { mode: "cors" });
+            const resp = await fetch(base + path,
+            {
+                method: "GET"
+            });
             if (!resp.ok) throw new Error(`Bad status ${resp.status}`);
-            const json = await resp.json();
-            return json;
+            return await resp.json();
         }
         catch (err)
         {
@@ -113,7 +115,8 @@ async function fetchComments(videoId)
 {
     try
     {
-        const comments = await fetchFromInstances(`/api/v1/comments/${videoId}?count=100`);
+        console.log("fetching comments");
+        const comments = await fetchFromInstances(`api/v1/comments/${videoId}?count=200`);
         if (Array.isArray(comments)) return comments;
         if (comments.comments) return comments.comments;
     }
@@ -122,7 +125,7 @@ async function fetchComments(videoId)
         console.warn("Primary comment fetch failed, trying fallback /videos/");
         try
         {
-            const videoData = await fetchFromInstances(`/api/v1/videos/${videoId}?count=100`);
+            const videoData = await fetchFromInstances(`api/v1/videos/${videoId}?count=200`);
             return videoData.comments || [];
         }
         catch (err2)
@@ -272,6 +275,7 @@ function jumpToTimestamp()
 // === YT API ===
 async function onYouTubeIframeAPIReady()
 {
+    console.log("attempting inital video fetch");
     await fetchChannelVideos(1).then((vids) =>
     {
         allVideos = vids;
