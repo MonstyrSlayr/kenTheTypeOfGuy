@@ -2,9 +2,7 @@
 const invidiousInstances = [
     "https://inv.nadeko.net/",
     "https://yewtu.be/",
-    "https://invidious.f5.si/",
     "https://invidious.nerdvpn.de/",
-    "https://inv.perditum.com/"
 ];
 const channelId = "UCiFOL6V9KbvxfXvzdFSsqCw";
 const timestampRegex = /\b(\d{1,2}):(\d{2})(?::(\d{2}))?\b/;
@@ -52,8 +50,13 @@ function parseTimestamp(str)
     return 0;
 }
 
-async function fetchFromInstances(path)
+async function fetchFromInstances(path, tries = 5)
 {
+    if (tries <= 0)
+    {
+        throw new Error("All invidious instances failed.");
+    }
+
     for (const base of invidiousInstances)
     {
         try
@@ -70,7 +73,9 @@ async function fetchFromInstances(path)
             console.warn(`instance failed: ${base}`, err);
         }
     }
-    throw new Error("All invidious instances failed");
+
+    console.error("All invidious instances failed. Retrying...");
+    return await fetchFromInstances(path, tries - 1);
 }
 
 async function fetchChannelVideos(maxPages)
